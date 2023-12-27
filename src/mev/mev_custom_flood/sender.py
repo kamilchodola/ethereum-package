@@ -96,7 +96,8 @@ def check_receipts_thread():
 
 def delayed_send(interval_between_transactions):
     while True:
-        tx_hash = send_transaction()
+        send_transaction()
+        logging.info(f"Waiting for: {interval_between_transactions} seconds.")
         time.sleep(interval_between_transactions)
 
 
