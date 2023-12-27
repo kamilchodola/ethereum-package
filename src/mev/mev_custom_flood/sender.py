@@ -75,6 +75,8 @@ def check_receipts_thread():
 
     w3 = Web3(Web3.HTTPProvider(EL_URI))
 
+    logging.info(f"Starting a Receitps Verification Thread.")
+
     while True:
         current_time = time.time()
         for tx_hash, timestamp in list(TX_HASHES):
