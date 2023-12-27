@@ -104,7 +104,7 @@ def delayed_send(interval_between_transactions):
 @click.command()
 @click.option('--interval_between_transactions', default=0.5, help='Interval between successive transaction sends (in seconds). The value may be an integer or decimal')
 def run_infinitely(interval_between_transactions):
-    logging.info(f"Using sender {SENDER} receiver {RECEIVER} and el_uri {EL_URI}")
+    logging.info(f"Using sender {SENDER}, receiver {RECEIVER}, el_uri {EL_URI} and interval {interval_between_transactions}")
 
     # Start the transaction verification thread
     threading.Thread(target=check_receipts_thread, daemon=True).start()
