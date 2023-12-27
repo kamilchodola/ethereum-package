@@ -57,7 +57,7 @@ def send_transaction():
     logging.info(tx_hash.hex())
     assert tx["from"] == sender_account.address
 
-    tx_hashes.append(tx_hash.hex())  # Add tx_hash to the global list
+    TX_HASHES.append(tx_hash.hex())  # Add tx_hash to the global list
 
 def verify_transaction(tx_hash):
     w3 = Web3(Web3.HTTPProvider(EL_URI))
@@ -71,23 +71,23 @@ def verify_transaction(tx_hash):
 
 
 def check_receipts_thread():
-    global tx_hashes
+    global TX_HASHES
 
     w3 = Web3(Web3.HTTPProvider(EL_URI))
 
     while True:
         current_time = time.time()
-        for tx_hash, timestamp in list(tx_hashes):
+        for tx_hash, timestamp in list(TX_HASHES):
             if current_time - timestamp > 60:  # Check if 60 seconds have passed
                 logging.error(f"Transaction receipt not found within 60 seconds for {tx_hash}")
-                tx_hashes.remove((tx_hash, timestamp))  # Remove the hash if timeout
+                TX_HASHES.remove((tx_hash, timestamp))  # Remove the hash if timeout
                 continue
 
             try:
                 receipt = w3.eth.get_transaction_receipt(tx_hash)
                 if receipt:
                     logging.info(f"Transaction receipt found. Block Number: {receipt.blockNumber}")
-                    tx_hashes.remove((tx_hash, timestamp))  # Remove the hash after checking
+                    TX_HASHES.remove((tx_hash, timestamp))  # Remove the hash after checking
             except Exception as e:
                 # If receipt is not yet available, do nothing
                 pass
