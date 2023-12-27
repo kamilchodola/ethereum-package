@@ -75,11 +75,16 @@ def check_receipts_thread():
 
     w3 = Web3(Web3.HTTPProvider(EL_URI))
 
-    logging.info(f"Starting a Receitps Verification Thread.")
+    logging.info(f"Starting a receipts verification thread.")
 
     while True:
+        if len(TX_HASHES) == 0:
+            logging.info(f"No pending transactions to check.")
+
         current_time = time.time()
         for tx_hash, timestamp in list(TX_HASHES):
+            logging.debug(f"Checking transaction with hash: {tx_hash}")
+
             if current_time - timestamp > 60:  # Check if 60 seconds have passed
                 logging.error(f"Transaction receipt not found within 60 seconds for {tx_hash}")
                 TX_HASHES.remove((tx_hash, timestamp))  # Remove the hash if timeout
@@ -90,11 +95,13 @@ def check_receipts_thread():
                 if receipt:
                     logging.info(f"Transaction receipt found. Block Number: {receipt.blockNumber}")
                     TX_HASHES.remove((tx_hash, timestamp))  # Remove the hash after checking
+                else:
+                    logging.debug(f"Receipt not yet available for {tx_hash}, will retry.")
             except Exception as e:
-                # If receipt is not yet available, do nothing
-                pass
+                logging.error(f"Error checking receipt for {tx_hash}: {e}")
 
         time.sleep(1)  # Short delay to prevent excessive CPU usage
+
 
 def delayed_send(interval_between_transactions):
     logging.info(f"Sending transaction...")
