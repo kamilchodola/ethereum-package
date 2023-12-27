@@ -95,6 +95,7 @@ def check_receipts_thread():
         time.sleep(1)  # Short delay to prevent excessive CPU usage
 
 def delayed_send(interval_between_transactions):
+    logging.info(f"Sending transaction...")
     send_transaction()
     logging.info(f"Waiting for: {interval_between_transactions} seconds.")
     time.sleep(interval_between_transactions)
