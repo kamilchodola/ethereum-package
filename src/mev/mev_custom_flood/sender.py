@@ -75,13 +75,26 @@ def check_receipts_thread():
 
     try:
         w3 = Web3(Web3.HTTPProvider(EL_URI))
-        logging.info(f"Starting a receipts verification thread.")
+        logging.info(f"Starting the receipts verification thread.")
 
         while True:
             if len(TX_HASHES) == 0:
                 logging.info(f"No pending transactions to check.")
             else:
                 current_time = time.time()
+                oldest_tx_age = None
+                oldest_tx_hash = None
+
+                # Find the oldest transaction in the queue
+                for tx_hash, timestamp in TX_HASHES:
+                    tx_age = current_time - timestamp
+                    if oldest_tx_age is None or tx_age > oldest_tx_age:
+                        oldest_tx_age = tx_age
+                        oldest_tx_hash = tx_hash
+
+                # Log the number of transactions and the oldest one
+                logging.info(f"{len(TX_HASHES)} transactions waiting for verification. Oldest TX Hash: {oldest_tx_hash}, Age: {oldest_tx_age:.2f} seconds.")
+
                 for tx_hash, timestamp in list(TX_HASHES):
                     logging.debug(f"Checking transaction with hash: {tx_hash}")
 
@@ -104,6 +117,7 @@ def check_receipts_thread():
 
     except Exception as e:
         logging.critical(f"Unexpected error in check_receipts_thread: {e}")
+
 
 def delayed_send(interval_between_transactions):
     logging.info(f"Sending transaction...")
