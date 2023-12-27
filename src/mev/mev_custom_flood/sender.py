@@ -57,7 +57,7 @@ def send_transaction():
     logging.info(tx_hash.hex())
     assert tx["from"] == sender_account.address
 
-    TX_HASHES.append(tx_hash.hex(), time.time())  # Add tx_hash to the global list
+    TX_HASHES.append((tx_hash.hex(), time.time())) 
 
 def verify_transaction(tx_hash):
     w3 = Web3(Web3.HTTPProvider(EL_URI))
