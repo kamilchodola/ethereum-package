@@ -57,7 +57,7 @@ def send_transaction():
     logging.info(tx_hash.hex())
     assert tx["from"] == sender_account.address
 
-    TX_HASHES.append(tx_hash.hex())  # Add tx_hash to the global list
+    TX_HASHES.append(tx_hash.hex(), time.time())  # Add tx_hash to the global list
 
 def verify_transaction(tx_hash):
     w3 = Web3(Web3.HTTPProvider(EL_URI))
@@ -104,8 +104,6 @@ def check_receipts_thread():
 
     except Exception as e:
         logging.critical(f"Unexpected error in check_receipts_thread: {e}")
-
-
 
 def delayed_send(interval_between_transactions):
     logging.info(f"Sending transaction...")
