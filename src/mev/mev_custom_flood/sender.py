@@ -73,34 +73,38 @@ def verify_transaction(tx_hash):
 def check_receipts_thread():
     global TX_HASHES
 
-    w3 = Web3(Web3.HTTPProvider(EL_URI))
+    try:
+        w3 = Web3(Web3.HTTPProvider(EL_URI))
+        logging.info(f"Starting a receipts verification thread.")
 
-    logging.info(f"Starting a receipts verification thread.")
+        while True:
+            if len(TX_HASHES) == 0:
+                logging.info(f"No pending transactions to check.")
+            else:
+                current_time = time.time()
+                for tx_hash, timestamp in list(TX_HASHES):
+                    logging.debug(f"Checking transaction with hash: {tx_hash}")
 
-    while True:
-        if len(TX_HASHES) == 0:
-            logging.info(f"No pending transactions to check.")
+                    if current_time - timestamp > 60:  # Check if 60 seconds have passed
+                        logging.error(f"Transaction receipt not found within 60 seconds for {tx_hash}")
+                        TX_HASHES.remove((tx_hash, timestamp))  # Remove the hash if timeout
+                        continue
 
-        current_time = time.time()
-        for tx_hash, timestamp in list(TX_HASHES):
-            logging.debug(f"Checking transaction with hash: {tx_hash}")
+                    try:
+                        receipt = w3.eth.get_transaction_receipt(tx_hash)
+                        if receipt:
+                            logging.info(f"Transaction receipt found. Block Number: {receipt.blockNumber}")
+                            TX_HASHES.remove((tx_hash, timestamp))  # Remove the hash after checking
+                        else:
+                            logging.debug(f"Receipt not yet available for {tx_hash}, will retry.")
+                    except Exception as e:
+                        logging.error(f"Error checking receipt for {tx_hash}: {e}")
 
-            if current_time - timestamp > 60:  # Check if 60 seconds have passed
-                logging.error(f"Transaction receipt not found within 60 seconds for {tx_hash}")
-                TX_HASHES.remove((tx_hash, timestamp))  # Remove the hash if timeout
-                continue
+            time.sleep(1)  # Short delay to prevent excessive CPU usage
 
-            try:
-                receipt = w3.eth.get_transaction_receipt(tx_hash)
-                if receipt:
-                    logging.info(f"Transaction receipt found. Block Number: {receipt.blockNumber}")
-                    TX_HASHES.remove((tx_hash, timestamp))  # Remove the hash after checking
-                else:
-                    logging.debug(f"Receipt not yet available for {tx_hash}, will retry.")
-            except Exception as e:
-                logging.error(f"Error checking receipt for {tx_hash}: {e}")
+    except Exception as e:
+        logging.critical(f"Unexpected error in check_receipts_thread: {e}")
 
-        time.sleep(1)  # Short delay to prevent excessive CPU usage
 
 
 def delayed_send(interval_between_transactions):
