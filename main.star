@@ -692,7 +692,7 @@ def run(plan, args={}):
                 spamoor.launch_spamoor(
                     plan,
                     random_wallets[i],
-                    all_el_contexts,
+                    all_el_contexts[0],
                     args_with_right_defaults.spamoor_params,
                     global_node_selectors,
                     idx=i,
