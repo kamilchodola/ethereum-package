@@ -35,9 +35,7 @@ def get_config(
     cmd = [
         "{}".format(spamoor_params.scenario),
         "--privkey={}".format(prefunded_addresses),
-        "--rpchost={}".format(
-            ",".join([el_context.rpc_http_url for el_context in all_el_contexts])
-        ),
+        "--rpchost={}".format(all_el_contexts.rpc_http_url),
     ]
 
     if spamoor_params.throughput != None:
