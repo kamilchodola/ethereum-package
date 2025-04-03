@@ -13,7 +13,6 @@ NETWORK_ID_TO_NAME = {
     "1": "mainnet",
     "17000": "holesky",
     "11155111": "sepolia",
-    "560048": "hoodi",
 }
 
 LAUNCH_ADMINER = True

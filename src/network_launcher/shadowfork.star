@@ -29,13 +29,12 @@ def shadowfork_prep(
         name="fetch-latest-block",
         description="Fetching the latest block",
         run="mkdir -p /shadowfork && \
-            curl -s -o /shadowfork/latest_block.json "
+            curl -o /shadowfork/latest_block.json "
         + network_params.network_sync_base_url
         + base_network
         + "/geth/"
         + shadowfork_block
-        + "/_snapshot_eth_getBlockByNumber.json && \
-           cat /shadowfork/latest_block.json",
+        + "/_snapshot_eth_getBlockByNumber.json",
         store=[StoreSpec(src="/shadowfork", name="latest_blocks")],
     )
 
@@ -108,5 +107,4 @@ def shadowfork_prep(
             interval="1s",
             timeout="6h",  # 6 hours should be enough for the biggest network
         )
-        plan.remove_service(name="shadowfork-{0}".format(el_service_name))
     return latest_block, network_id

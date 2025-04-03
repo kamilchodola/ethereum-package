@@ -176,10 +176,7 @@ def get_config(
     else:
         cmd.append("--network=" + launcher.network)
 
-    if (
-        launcher.network == constants.NETWORK_NAME.kurtosis
-        or constants.NETWORK_NAME.shadowfork in launcher.network
-    ):
+    if launcher.network == constants.NETWORK_NAME.kurtosis:
         if len(existing_el_clients) > 0:
             cmd.append(
                 "--bootnodes="
